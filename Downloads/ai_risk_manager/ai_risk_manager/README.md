@@ -1,4 +1,4 @@
-# 🛡️ AI Risk Manager — Fraud-Spike Detection for Merchants
+#  AI Risk Manager — Fraud-Spike Detection for Merchants
 
 A **defense-only** machine learning system that detects unusual spikes in potentially
 fraudulent transactions for Indian merchants and helps a human risk/fraud team
@@ -280,46 +280,3 @@ detection (both a positive case with an injected spike and a negative case with
 a stable merchant), the SQLite alert-status layer, and the full scoring
 pipeline end-to-end.
 
-## 2-Minute Hackathon Demo Flow
-
-1. **(0:00–0:20)** Open the dashboard — point out total transactions, suspicious
-   transactions, fraud detection rate (recall), and the "not perfectly accurate"
-   disclaimer banner.
-2. **(0:20–0:45)** Show the fraud-spike time-series chart — point out the
-   triangle markers where spikes were detected, and the severity breakdown bar
-   chart.
-3. **(0:45–1:15)** Go to **Alerts & Investigation**, pick a Critical alert,
-   walk through: alert reason, hourly transaction pattern chart, top
-   contributing features, and the defensive-only recommendations. Set an
-   investigation status and save it (shows persistence).
-4. **(1:15–1:45)** Go to **Model & Evaluation** — show the chronological
-   train/val/test split table, the confusion matrix, and precision/recall on
-   the **held-out test set** specifically (emphasize it's not training
-   accuracy). Scroll to Limitations.
-5. **(1:45–2:00)** Back on the main dashboard, adjust the false-positive cost
-   slider to show the live cost/benefit comparison, and close on the point that
-   this is a decision-support tool for human analysts, not an automated
-   blocker.
-
-## Suggested Improvements to Precision/Recall Without Data Leakage
-
-- **More historical context per entity**: longer trailing windows (7-day,
-  30-day) computed the same backward-looking way already used, to better
-  separate genuinely new devices/customers from established ones.
-- **Cross-validation within the training period only** (e.g., rolling-origin
-  time-series CV across multiple train/validation windows within the first 51
-  days) to get a more robust threshold than a single validation split, while
-  still never touching the test days.
-- **Gradient boosting (XGBoost/LightGBM)** with the same time-based split and
-  the same validation-only threshold tuning, compared head-to-head against the
-  current Random Forest.
-- **Better handling of rare categorical values** (e.g., a device seen for the
-  first time) via target encoding computed only from past data.
-- **Cost-sensitive threshold search** directly on the false-positive-cost model
-  (Section 7) instead of a fixed recall target, still fit only on validation.
-
----
-
-*This project was built as a defensive, decision-support fraud-spike detector.
-It performs no offensive actions and does not provide instructions for evading
-fraud detection or exploiting payment systems.*
