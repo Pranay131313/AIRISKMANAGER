@@ -1,13 +1,3 @@
-"""
-generate_dataset.py
---------------------
-Generates a realistic SYNTHETIC transaction dataset for Indian merchants,
-with embedded normal behaviour and several distinct FRAUD PATTERNS
-(including sudden merchant-level fraud spikes). No real data is used.
-
-This is for building/evaluating a DEFENSIVE fraud detector only.
-"""
-
 import numpy as np
 import pandas as pd
 from datetime import datetime, timedelta
@@ -34,8 +24,6 @@ MERCHANT_IDS = [f"M{str(i).zfill(4)}" for i in range(1, N_MERCHANTS + 1)]
 CUSTOMER_IDS = [f"C{str(i).zfill(5)}" for i in range(1, N_CUSTOMERS + 1)]
 DEVICE_IDS = [f"D{str(i).zfill(5)}" for i in range(1, N_DEVICES + 1)]
 
-# Each merchant gets a "home city" and a typical average ticket size,
-# so normal behaviour is merchant-specific (more realistic).
 MERCHANT_PROFILE = {
     m: {
         "home_city": random.choice(CITIES),
@@ -57,12 +45,11 @@ def generate_normal_transaction(merchant_id, day_offset):
     profile = MERCHANT_PROFILE[merchant_id]
     ts = START_DATE + timedelta(
         days=int(day_offset),
-        hours=int(np.random.choice(range(6, 23))),  # most legit txns happen 6am-11pm
+        hours=int(np.random.choice(range(6, 23))),  
         minutes=int(np.random.randint(0, 60)),
         seconds=int(np.random.randint(0, 60)),
     )
     amount = max(20, np.random.normal(profile["avg_ticket"], profile["avg_ticket"] * 0.35))
-    # 90% of normal transactions happen near the merchant's home city
     location = profile["home_city"] if np.random.rand() < 0.9 else random.choice(CITIES)
     status = np.random.choice(["SUCCESS", "FAILED"], p=[0.95, 0.05])
 
@@ -102,7 +89,6 @@ def generate_fraud_transaction(merchant_id, day_offset, pattern):
         status = np.random.choice(["SUCCESS", "FAILED"], p=[0.7, 0.3])
 
     elif pattern == "device_burst":
-        # one device used for many rapid transactions across many customers
         amount = max(20, np.random.normal(profile["avg_ticket"], profile["avg_ticket"] * 0.5))
         location = profile["home_city"]
         device = "D_FRAUD_DEVICE"
@@ -118,14 +104,13 @@ def generate_fraud_transaction(merchant_id, day_offset, pattern):
         status = np.random.choice(["SUCCESS", "FAILED"], p=[0.65, 0.35])
 
     elif pattern == "failed_probing":
-        # card/credential testing: many rapid low-value failed attempts
         amount = round(np.random.uniform(10, 100), 2)
         location = profile["home_city"]
         device = "D_PROBE_DEVICE"
         customer = random.choice(CUSTOMER_IDS)
         status = np.random.choice(["SUCCESS", "FAILED"], p=[0.15, 0.85])
 
-    else:  # "merchant_spike" -- sudden burst of many fraud-like txns for one merchant
+    else: 
         amount = max(20, np.random.normal(profile["avg_ticket"] * 1.5, profile["avg_ticket"] * 0.6))
         location = profile["home_city"]
         device = random.choice(DEVICE_IDS)
@@ -149,14 +134,12 @@ def generate_fraud_transaction(merchant_id, day_offset, pattern):
 def generate_dataset(save_path="data/transactions.csv"):
     rows = []
 
-    # --- Normal transaction volume across 90 days ---
     for day in range(N_DAYS):
         for merchant_id in MERCHANT_IDS:
             n_txns = np.random.poisson(MERCHANT_PROFILE[merchant_id]["daily_volume"])
             for _ in range(n_txns):
                 rows.append(generate_normal_transaction(merchant_id, day))
 
-    # --- Scattered "background" fraud (few percent, always present) ---
     n_background_fraud = int(len(rows) * 0.015)
     for _ in range(n_background_fraud):
         merchant_id = random.choice(MERCHANT_IDS)
@@ -164,7 +147,6 @@ def generate_dataset(save_path="data/transactions.csv"):
         pattern = random.choice(["high_value_outlier", "geo_anomaly"])
         rows.append(generate_fraud_transaction(merchant_id, day, pattern))
 
-    # --- Deliberate fraud SPIKES: a handful of merchant/day combos get hit hard ---
     n_spikes = 14
     spike_days_merchants = set()
     for _ in range(n_spikes):
