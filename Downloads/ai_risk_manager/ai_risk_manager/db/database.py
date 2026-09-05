@@ -1,11 +1,3 @@
-"""
-database.py
-------------
-Minimal SQLite persistence layer for alert investigation state
-(e.g. marking an alert as reviewed). Keeps the demo app stateful across
-reruns without needing a full backend service.
-"""
-
 import sqlite3
 from contextlib import contextmanager
 
