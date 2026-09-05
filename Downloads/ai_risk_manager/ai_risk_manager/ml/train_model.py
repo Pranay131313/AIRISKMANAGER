@@ -1,35 +1,3 @@
-"""
-train_model.py
----------------
-Trains the fraud-spike detector using a strict TIME-BASED split:
-
-    train  : first 70% of days (chronologically)
-    val    : next 15% of days
-    test   : final 15% of days   <-- held out, touched ONLY for final reporting
-
-Why time-based split (not random)?
-Fraud detection is inherently temporal (spikes happen on specific days).
-A random split would let the model "see" transactions from the same day/
-merchant spike in both train and test, leaking information and inflating
-metrics. A time-based split mimics real deployment: train on the past,
-evaluate on the future.
-
-Why Random Forest?
-- Handles the mix of numeric + engineered features well without needing
-  feature scaling.
-- Naturally captures non-linear interactions (e.g. "high amount AND new
-  device AND odd hour" is a stronger signal than any single feature).
-- Gives class-conditional probabilities we can threshold for a cost-based
-  precision/recall trade-off, and feature_importances_ for explainability.
-- Robust to noisy synthetic data compared to a single decision tree, and
-  simpler to justify/tune under hackathon time constraints than XGBoost
-  (no separate dependency), while performing comparably on tabular data
-  of this size.
-Class imbalance (fraud ~2%) is handled via `class_weight="balanced"`
-rather than naive oversampling, to avoid duplicating information across
-the train/val/test boundary.
-"""
-
 import json
 import joblib
 import numpy as np
