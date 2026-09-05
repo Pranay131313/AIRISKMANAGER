@@ -1,12 +1,3 @@
-"""
-streamlit_app.py
------------------
-AI Risk Manager -- main dashboard (fraud-spike detection for merchants).
-
-Run with:
-    streamlit run app/streamlit_app.py
-"""
-
 import sys
 import os
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
@@ -21,11 +12,9 @@ from ml.risk_scoring import compute_false_positive_cost
 
 st.set_page_config(
     page_title="AI Risk Manager | Fraud Spike Detection",
-    page_icon="🛡️",
     layout="wide",
 )
 
-# ---------- Minimal fintech-style styling ----------
 st.markdown("""
 <style>
     .risk-card {
@@ -43,20 +32,19 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-st.title("🛡️ AI Risk Manager")
+st.title(" AI Risk Manager")
 st.caption("Defense-only fraud-spike detection & investigation for merchants (India) — synthetic demo data")
 
 fdf, spikes, metrics, model, feature_cols = get_scored_data()
 
 st.markdown(
-    '<div class="disclaimer">⚠️ This model flags <b>statistically unusual</b> transactions for human review. '
+    '<div class="disclaimer"> This model flags <b>statistically unusual</b> transactions for human review. '
     'It is <b>not perfectly accurate</b> — see the "Model & Evaluation" page for real precision/recall on a held-out test set, '
     'and treat every alert as a lead for investigation, not a verdict.</div>',
     unsafe_allow_html=True,
 )
 st.write("")
 
-# ---------------- Top-line KPIs ----------------
 total_txns = len(fdf)
 suspicious_txns = int(fdf["is_flagged"].sum())
 fraud_detection_rate = metrics["test_metrics"]["recall"]
@@ -72,11 +60,10 @@ col5.metric("Active Fraud Spikes", n_spikes, delta=None)
 
 st.divider()
 
-# ---------------- Fraud spikes over time ----------------
 left, right = st.columns([2, 1])
 
 with left:
-    st.subheader("📈 Suspicious Transactions Over Time")
+    st.subheader(" Suspicious Transactions Over Time")
     daily = fdf.groupby("day").agg(
         total=("transaction_id", "count"),
         suspicious=("is_flagged", "sum"),
@@ -101,7 +88,7 @@ with left:
     st.plotly_chart(fig, use_container_width=True)
 
 with right:
-    st.subheader("🚨 Severity Breakdown")
+    st.subheader(" Severity Breakdown")
     sev_counts = fdf[fdf["is_flagged"] == 1]["severity"].value_counts().reindex(
         ["Critical", "High", "Medium", "Low"]).fillna(0)
     colors = {"Critical": "#dc2626", "High": "#f97316", "Medium": "#eab308", "Low": "#22c55e"}
@@ -115,11 +102,10 @@ with right:
 
 st.divider()
 
-# ---------------- High-risk merchants / devices / customers ----------------
 c1, c2, c3 = st.columns(3)
 
 with c1:
-    st.subheader("🏪 High-Risk Merchants")
+    st.subheader(" High-Risk Merchants")
     merch = fdf.groupby("merchant_id").agg(
         suspicious=("is_flagged", "sum"), total=("transaction_id", "count"),
         avg_risk=("risk_score", "mean"),
@@ -134,7 +120,7 @@ with c1:
     )
 
 with c2:
-    st.subheader("📱 High-Risk Devices")
+    st.subheader(" High-Risk Devices")
     dev = fdf[fdf["is_flagged"] == 1].groupby("device_id").agg(
         suspicious=("is_flagged", "sum"), avg_risk=("risk_score", "mean")
     ).reset_index().sort_values("suspicious", ascending=False).head(8)
@@ -144,7 +130,7 @@ with c2:
     )
 
 with c3:
-    st.subheader("👤 High-Risk Customers")
+    st.subheader(" High-Risk Customers")
     cust = fdf[fdf["is_flagged"] == 1].groupby("customer_id").agg(
         suspicious=("is_flagged", "sum"), avg_risk=("risk_score", "mean")
     ).reset_index().sort_values("suspicious", ascending=False).head(8)
@@ -155,11 +141,10 @@ with c3:
 
 st.divider()
 
-# ---------------- Model quality + false-positive cost ----------------
 c4, c5 = st.columns([1, 1])
 
 with c4:
-    st.subheader("🎯 Model Performance (held-out test set)")
+    st.subheader(" Model Performance (held-out test set)")
     tm = metrics["test_metrics"]
     mcol1, mcol2, mcol3, mcol4 = st.columns(4)
     mcol1.metric("Precision", f"{tm['precision']*100:.1f}%")
@@ -173,7 +158,7 @@ with c4:
     )
 
 with c5:
-    st.subheader("💰 False-Positive Cost vs. Fraud Prevented")
+    st.subheader(" False-Positive Cost vs. Fraud Prevented")
     cost_per_fp = st.slider("Cost per false positive (₹)", 50, 1000, 150, step=50)
     review_rate = st.slider("Review success rate on flagged fraud", 0.5, 1.0, 0.9, step=0.05)
 
