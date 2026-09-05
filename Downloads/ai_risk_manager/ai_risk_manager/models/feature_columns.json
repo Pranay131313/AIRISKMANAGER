@@ -1,0 +1,20 @@
+[
+  "amount",
+  "hour",
+  "is_night",
+  "is_failed",
+  "amount_zscore_vs_merchant",
+  "device_running_count",
+  "customer_running_count",
+  "is_geo_anomaly",
+  "merchant_txn_count_60min",
+  "merchant_txn_count_24h",
+  "merchant_failed_rate_24h",
+  "device_txn_count_60min",
+  "merchant_spike_ratio",
+  "pm_Credit Card",
+  "pm_Debit Card",
+  "pm_Net Banking",
+  "pm_UPI",
+  "pm_Wallet"
+]
