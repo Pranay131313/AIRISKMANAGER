@@ -1,20 +1,3 @@
-"""
-spike_detection.py
--------------------
-Detects sudden abnormal increases in flagged/suspicious transactions at
-the merchant level ("fraud spikes"), using a simple, explainable
-statistical rule on top of the model's per-transaction predictions:
-
-    A merchant/day is a spike if the count of model-flagged suspicious
-    transactions that day exceeds:
-        merchant's rolling mean (trailing 14 days) + Z * rolling std
-    where Z is configurable (default 3 = ~99.7th percentile under a
-    normal approximation).
-
-This is intentionally simple and explainable (auditable by a human
-analyst), rather than a second opaque ML layer.
-"""
-
 import numpy as np
 import pandas as pd
 
