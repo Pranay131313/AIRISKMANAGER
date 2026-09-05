@@ -1,16 +1,3 @@
-"""
-evaluate.py
------------
-Loads the trained model, scores the FULL dataset (for dashboard display),
-and exposes helper functions used by both the Streamlit app and tests.
-
-Note: metrics.json (produced by train_model.py) is the source of truth
-for reported precision/recall/etc. This module additionally scores the
-full dataset so the dashboard can show live suspicious transactions,
-spikes, and per-merchant risk -- it does not alter or re-derive the
-held-out test metrics.
-"""
-
 import json
 import joblib
 import pandas as pd
