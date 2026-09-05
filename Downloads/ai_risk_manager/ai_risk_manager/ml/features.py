@@ -1,15 +1,3 @@
-"""
-features.py
-------------
-Feature engineering for the fraud-spike detector.
-
-IMPORTANT (data-leakage discipline):
-All rolling / aggregate features are computed using only information that
-would have been available *at or before* the time of the transaction
-(each entity's history up to that point), never using future transactions.
-This is what makes the held-out test evaluation honest.
-"""
-
 import pandas as pd
 import numpy as np
 
