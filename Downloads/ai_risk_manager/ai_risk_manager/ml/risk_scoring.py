@@ -1,12 +1,4 @@
-"""
-risk_scoring.py
-----------------
-Converts model fraud-probabilities into a 0-100 risk score and severity
-band, and provides simple, defensive recommendations. Pure decision
-support -- no automated blocking/offensive action is taken.
-"""
-
-import numpy as np
+ numpy as np
 import pandas as pd
 
 
