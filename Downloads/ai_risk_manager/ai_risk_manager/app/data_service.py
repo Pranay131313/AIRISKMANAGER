@@ -1,11 +1,3 @@
-"""
-data_service.py
-----------------
-Cached data-loading layer shared across all Streamlit pages, so the model
-and scored dataset are computed once per session rather than on every
-page load.
-"""
-
 import streamlit as st
 import sys
 import os
